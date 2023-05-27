@@ -29,7 +29,6 @@ export const SearchBooksPage = () => {
                 url = baseUrl + searchWithPage;
             }
 
-
             const response = await fetch(url);
 
             if (!response.ok) {
@@ -38,10 +37,10 @@ export const SearchBooksPage = () => {
 
             const responseJson = await response.json();
 
-            const responseData = responseJson._embedded.books;
+            const responseData = responseJson.content;
 
-            setTotalAmmountOfBooks(responseJson.page.totalElements);
-            setTotalPages(responseJson.page.totalPages);
+            setTotalAmmountOfBooks(responseJson.totalElements);
+            setTotalPages(responseJson.totalPages);
 
             const loadedBooks: BookModel[] = [];
 

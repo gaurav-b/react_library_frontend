@@ -23,7 +23,7 @@ export const Carousel = () => {
 
             const responseJson = await response.json();
 
-            const responseData = responseJson._embedded.books;
+            const responseData = responseJson.content;
 
             const loadedBooks: BookModel[] = [];
 

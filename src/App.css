@@ -21,6 +21,11 @@
 background-color: #0e76a8 ;
 }
 
+.btn.main-color { 
+    --bs-btn-hover-bg: #0e76a8;
+    --bs-btn-hover-border-color: #00000;
+ }
+
 .col-image-left {
     background-image: url("./Images/PublicImages/image-4.jpg");
     height: 25em !important;

@@ -4,32 +4,42 @@ import { Navbar } from './layouts/navbar-and-footer/Navbar';
 import { Footer } from './layouts/navbar-and-footer/Footer';
 import { HomePage } from './layouts/home-page/HomePage';
 import { SearchBooksPage } from './layouts/search-books-page/SearchBooksPage';
-import { Redirect, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Router, Routes } from 'react-router-dom';
+import { BookCheckoutPage } from './layouts/book-checkout-page/BookCheckoutPage';
+import { SignUp } from './layouts/home-page/SignUp';
+import { SignIn } from './layouts/home-page/SignIn';
+import { AuthProvider } from './context/AuthContext';
 
 export const App = () => {
+
   return (
     <div className='d-flex flex-column min-vh-100'>
-      <Navbar />
+      <React.StrictMode>
+        <AuthProvider>
+          <BrowserRouter>
+            <Navbar />
 
-      <div className='flex-grow-1'>
-        <switch>
+            <div className='flex-grow-1'>
+              <Routes>
+                <Route path="*" element={<Navigate to="/" />} />
+                <Route path='/' element={<HomePage />} />
+                <Route path='/home' element={<HomePage />} />
 
-          <Route path='/' exact>
-            <Redirect to='/home' />
-          </Route>
+                <Route path='/signup' element={<SignUp />} />
+                <Route path='/login' element={<SignIn />} />
 
-          <Route path='/home'>
-            <HomePage />
-          </Route>
+                <Route path='/search' element={<SearchBooksPage />} />
+                <Route path='/checkout/:bookId' element={<BookCheckoutPage />} />
 
-          <Route path='/search'>
-            <SearchBooksPage />
-          </Route>
+              </Routes>
+            </div>
 
-        </switch>
-      </div>
+            <Footer />
 
-      <Footer />
+          </BrowserRouter>
+        </AuthProvider>
+      </React.StrictMode>
     </div>
   );
 }
+
