@@ -1,4 +1,4 @@
-export const StartReview: React.FC<{ rating: number, size: number }> = (props) => {
+export const StarsReview: React.FC<{ rating: number, size: number }> = (props) => {
 
     let rating = props.rating;
     let fullStars = 0;

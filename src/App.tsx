@@ -9,6 +9,7 @@ import { BookCheckoutPage } from './layouts/book-checkout-page/BookCheckoutPage'
 import { SignUp } from './layouts/home-page/SignUp';
 import { SignIn } from './layouts/home-page/SignIn';
 import { AuthProvider } from './context/AuthContext';
+import { ReviewListPage } from './layouts/book-checkout-page/review-list-page/ReviewListPage';
 
 export const App = () => {
 
@@ -29,6 +30,7 @@ export const App = () => {
                 <Route path='/login' element={<SignIn />} />
 
                 <Route path='/search' element={<SearchBooksPage />} />
+                <Route path='/reviewlist/:bookId' element={<ReviewListPage />} />
                 <Route path='/checkout/:bookId' element={<BookCheckoutPage />} />
 
               </Routes>

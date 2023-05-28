@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import BookModel from "../../models/BookModel";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
-import { StartReview } from "../Utils/StartReview";
+import { StarsReview } from "../Utils/StarsReview";
 import { CheckoutAndReviewBox } from "./CheckoutAndReviewBox";
 import ReviewModel from "../../models/ReviewModel";
 import { LatestReviews } from "./LatestReviews";
 import { useAuth } from '../../context/AuthContext'
 import { config } from "../misc/Costants"
+import ReviewRequestModel from "../../models/ReviewRequestMovel";
 
 export const BookCheckoutPage = () => {
 
@@ -22,6 +23,9 @@ export const BookCheckoutPage = () => {
     const [reviews, setReviews] = useState<ReviewModel[]>([]);
     const [totalStars, setTotalStars] = useState(0);
     const [isLoadingReview, setIsLoadingReview] = useState(true);
+
+    const [isReviewLeft, setIsReviewLeft] = useState(false);
+    const [isLoadingUserReview, setIsLoadingUserReview] = useState(true);
 
     // Loads count state
     const [currentLoansCount, setCurrentLoansCount] = useState(0);
@@ -115,7 +119,40 @@ export const BookCheckoutPage = () => {
 
         window.scrollTo(0, 0);
 
-    }, []);
+    }, [isReviewLeft]);
+
+    useEffect(() => {
+        const fetchUserReviewBook = async () => {
+            if(userIsAuthenticated()) {
+
+                const user = getUser()
+                
+                const url = config.url.API_BASE_URL + `/api/reviews/secure/user/book?bookId=${bookId}`;
+                const requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${user.accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                const userReviewResponse = await fetch(url, requestOptions);
+                if(!userReviewResponse.ok) {
+                    throw new Error('Something went wrong!');
+                }
+
+                const userReviewResponseJson = await userReviewResponse.json();
+                setIsReviewLeft(userReviewResponseJson);
+            }
+
+            setIsLoadingUserReview(false);
+        }
+
+        fetchUserReviewBook().catch((error: any) => {
+            setIsLoadingUserReview(false);
+            setHttpError(error.message);
+        })
+    });
 
     useEffect(() => {
 
@@ -185,7 +222,7 @@ export const BookCheckoutPage = () => {
         })
     });
 
-    if (isLoading || isLoadingReview || isLoadingCurrentLoansCount || isLoadingBookCheckedOut) {
+    if (isLoading || isLoadingReview || isLoadingCurrentLoansCount || isLoadingBookCheckedOut || isLoadingUserReview) {
         return (
             <SpinnerLoading />
         )
@@ -220,6 +257,37 @@ export const BookCheckoutPage = () => {
         setIsCheckedOut(true);
     }
 
+    async function submitReview(starInput: number, reviewDescription: string) {
+        
+        let bookId: number = 0;
+        
+        if(book?.id) {
+            bookId = book.id;
+        }
+
+        const reviewRequestModel = new ReviewRequestModel(starInput, bookId, reviewDescription);
+
+        const url = config.url.API_BASE_URL + `/api/reviews/secure`;
+        const user = getUser()
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${user.accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reviewRequestModel)
+        };
+
+        const returnResponse = await fetch(url, requestOptions);
+
+        if(!returnResponse.ok) {
+            throw new Error('Something went wrong!');
+        }
+
+        setIsReviewLeft(true);
+    }
+
     return (
         <div>
             <div className="container d-none d-lg-block">
@@ -237,11 +305,12 @@ export const BookCheckoutPage = () => {
                             <h2>{book?.title}</h2>
                             <h5 className="text-primary">{book?.author}</h5>
                             <p className="lead">{book?.description}</p>
-                            <StartReview rating={totalStars} size={32}/>
+                            <StarsReview rating={totalStars} size={32}/>
                         </div>
                     </div>
                     <CheckoutAndReviewBox book={book} mobile={false} currentLoansCount={currentLoansCount} 
-                        isCheckedOut={isCheckedOut} isAuthenticated={userIsAuthenticated()} checkoutBook={checkoutBook}/>
+                        isCheckedOut={isCheckedOut} isAuthenticated={userIsAuthenticated()} checkoutBook={checkoutBook}
+                        isReviewLeft={isReviewLeft} submitReview={submitReview}/>
                 </div>
                 <hr />
                 <LatestReviews reviews={reviews} bookId={book?.id} mobile={false}></LatestReviews>
@@ -260,12 +329,13 @@ export const BookCheckoutPage = () => {
                         <h2>{book?.title}</h2>
                         <h5 className="text-primary">{book?.author}</h5>
                         <p className="lead">{book?.description}</p>
-                        <StartReview rating={totalStars} size={32}/>
+                        <StarsReview rating={totalStars} size={32}/>
                     </div>
                 </div>
 
                 <CheckoutAndReviewBox book={book} mobile={true} currentLoansCount={currentLoansCount} 
-                    isCheckedOut={isCheckedOut} isAuthenticated={userIsAuthenticated()} checkoutBook={checkoutBook}/>
+                    isCheckedOut={isCheckedOut} isAuthenticated={userIsAuthenticated()} checkoutBook={checkoutBook}
+                    isReviewLeft={isReviewLeft} submitReview={submitReview}/>
 
                 <hr />
                 <LatestReviews reviews={reviews} bookId={book?.id} mobile={true}></LatestReviews>
