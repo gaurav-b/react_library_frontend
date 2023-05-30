@@ -10,6 +10,8 @@ import { SignUp } from './layouts/home-page/SignUp';
 import { SignIn } from './layouts/home-page/SignIn';
 import { AuthProvider } from './context/AuthContext';
 import { ReviewListPage } from './layouts/book-checkout-page/review-list-page/ReviewListPage';
+import PrivateRoute from './layouts/misc/PrivateRoute';
+import { ShelfPage } from './layouts/shelf-page/ShelfPage';
 
 export const App = () => {
 
@@ -33,6 +35,7 @@ export const App = () => {
                 <Route path='/reviewlist/:bookId' element={<ReviewListPage />} />
                 <Route path='/checkout/:bookId' element={<BookCheckoutPage />} />
 
+                <Route path="/shelf" element={<PrivateRoute><ShelfPage /></PrivateRoute>} />
               </Routes>
             </div>
 

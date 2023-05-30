@@ -28,7 +28,7 @@ export const LatestReviews: React.FC<{
                         :
                         <div className="m-3">
                             <p className="lead">
-                                Currently there is no reviews for this book.
+                                Currently there are no reviews for this book.
                             </p>
                         </div>
                 }
